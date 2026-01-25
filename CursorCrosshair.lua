@@ -1,31 +1,61 @@
-local addon = CreateFrame("Frame", "CursorCrosshairFrame", UIParent)
-addon:SetAllPoints(UIParent)
-addon:SetFrameStrata("TOOLTIP")
+local ADDON_NAME, CC = ...
 
-local h_line = addon:CreateLine(nil, "OVERLAY")
+-------------------------------------------------------------------------------
+--- Setup
+
+CC.crosshair = CreateFrame("Frame", "CursorCrosshairFrame", UIParent)
+CC.crosshair:SetAllPoints(UIParent)
+CC.crosshair:SetFrameStrata("TOOLTIP")
+
+local h_line = CC.crosshair:CreateLine(nil, "OVERLAY")
 h_line:SetThickness(1)
-h_line:SetColorTexture(1, 1, 1, 0.5)
+h_line:SetColorTexture(1, 1, 1, 0.4)
 
-local v_line = addon:CreateLine(nil, "OVERLAY")
+local v_line = CC.crosshair:CreateLine(nil, "OVERLAY")
 v_line:SetThickness(1)
-v_line:SetColorTexture(1, 1, 1, 0.5)
+v_line:SetColorTexture(1, 1, 1, 0.4)
 
-local function UpdateCrosshair()
+local screen_width = 0
+local screen_height = 0
+
+-------------------------------------------------------------------------------
+--- Functions
+
+function CC:UpdateCrosshair()
     local x, y = GetCursorPosition()
     local scale = UIParent:GetEffectiveScale()
     x = x / scale
     y = y / scale
 
-    local width  = UIParent:GetWidth()
-    local height = UIParent:GetHeight()
-
     h_line:ClearAllPoints()
-    h_line:SetStartPoint("BOTTOMLEFT", x - width, y)
-    h_line:SetEndPoint  ("BOTTOMLEFT", x + width, y)
+    h_line:SetStartPoint("BOTTOMLEFT", x - screen_width, y)
+    h_line:SetEndPoint  ("BOTTOMLEFT", x + screen_width, y)
 
     v_line:ClearAllPoints()
-    v_line:SetStartPoint("BOTTOMLEFT", x, y - height)
-    v_line:SetEndPoint  ("BOTTOMLEFT", x, y + height)
+    v_line:SetStartPoint("BOTTOMLEFT", x, y - screen_height)
+    v_line:SetEndPoint  ("BOTTOMLEFT", x, y + screen_height)
 end
 
-addon:SetScript("OnUpdate", UpdateCrosshair)
+function CC:getScreenSize()
+    screen_width  = UIParent:GetWidth()
+    screen_height = UIParent:GetHeight()
+end
+
+-------------------------------------------------------------------------------
+--- Listeners
+
+CC.crosshair:SetScript("OnUpdate", CC.UpdateCrosshair)
+
+CC.crosshair:SetScript("OnEvent", function(self, event, addon_name, ...)
+    -- All registered events should update the screen size,
+    --   no need to check for specific events.
+    CC:getScreenSize()
+end)
+
+CC.crosshair:RegisterEvent("DISPLAY_SIZE_CHANGED")
+CC.crosshair:RegisterEvent("UI_SCALE_CHANGED")
+
+-------------------------------------------------------------------------------
+--- Init
+
+CC:getScreenSize()
