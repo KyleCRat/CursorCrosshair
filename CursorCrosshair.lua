@@ -19,7 +19,6 @@ local screen_width = 0
 local screen_height = 0
 local y_offset = -1 -- offset the cursor by 1 pixel
 local x_offset = 1
-local buffer = 4 -- Add 4 pixels to sides to ensure it covers the whole screen
 
 -------------------------------------------------------------------------------
 --- Functions
@@ -30,17 +29,20 @@ function CC:UpdateCrosshair()
 
     x = x / scale
     y = y / scale
+    -- x = PixelUtil.GetNearestPixelSize((x / scale), scale)
+    -- y = PixelUtil.GetNearestPixelSize((y / scale), scale)
 
-    width = screen_width + buffer
-    height = screen_height + buffer
+    width  = screen_width
+    height = screen_height
 
     h_line:ClearAllPoints()
-    h_line:SetStartPoint("BOTTOMLEFT", x - width, y + y_offset)
-    h_line:SetEndPoint  ("BOTTOMLEFT", x + width, y + y_offset)
+    h_line:SetStartPoint("BOTTOMLEFT", 0,     y + y_offset)
+    h_line:SetEndPoint(  "BOTTOMLEFT", width, y + y_offset)
 
     v_line:ClearAllPoints()
-    v_line:SetStartPoint("BOTTOMLEFT", x + x_offset, y - height)
-    v_line:SetEndPoint  ("BOTTOMLEFT", x + x_offset, y + height)
+    v_line:SetStartPoint("BOTTOMLEFT", x + x_offset, 0)
+    v_line:SetEndPoint(  "BOTTOMLEFT", x + x_offset, height)
+
 end
 
 local throttle_size_check = false
@@ -52,7 +54,7 @@ function CC:getScreenSize()
     --   the size before the change happens. Delay slightly to get correct
     --   width and add a throttle so we don't check multiple times for similar
     --   events.
-    C_Timer.After(0.05, function()
+    C_Timer.After(0.25, function()
         throttle_size_check = false
 
         screen_width  = UIParent:GetWidth()
@@ -65,11 +67,13 @@ end
 
 CC.crosshair:SetScript("OnUpdate", CC.UpdateCrosshair)
 
-CC.crosshair:SetScript("OnEvent", function(self, event, addon_name, ...)
-    -- All registered events should update the screen size,
-    --   no need to check for specific events.
-    CC:getScreenSize()
-end)
+-- All registered events should update the screen size,
+--   no need to check for specific events.
+CC.crosshair:SetScript("OnEvent", CC.getScreenSize)
+
+--- Hook UIParent:SetScale for addons like ElvUI that
+---   change scale directly without firing UI_SCALE_CHANGED
+hooksecurefunc(UIParent, "SetScale", CC.getScreenSize)
 
 -------------------------------------------------------------------------------
 --- Event Registrations
