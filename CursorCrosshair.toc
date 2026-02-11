@@ -2,7 +2,7 @@
 ## Title: Cursor Crosshair
 ## Notes: Draws crosshair lines at the cursor position.
 ## Author: Yvairel
-## Version: 12.0.1-3
+## Version: 12.0.1-4
 ## SavedVariables:
 
 CursorCrosshair.lua
