@@ -29,11 +29,9 @@ function CC:UpdateCrosshair()
 
     x = x / scale
     y = y / scale
-    -- x = PixelUtil.GetNearestPixelSize((x / scale), scale)
-    -- y = PixelUtil.GetNearestPixelSize((y / scale), scale)
 
-    width  = screen_width
-    height = screen_height
+    local width  = screen_width
+    local height = screen_height
 
     h_line:ClearAllPoints()
     h_line:SetStartPoint("BOTTOMLEFT", 0,     y + y_offset)
@@ -46,7 +44,8 @@ function CC:UpdateCrosshair()
 end
 
 local throttle_size_check = false
-function CC:getScreenSize()
+
+function CC:GetScreenSize()
     if throttle_size_check then return end
     throttle_size_check = true
 
@@ -69,11 +68,11 @@ CC.crosshair:SetScript("OnUpdate", CC.UpdateCrosshair)
 
 -- All registered events should update the screen size,
 --   no need to check for specific events.
-CC.crosshair:SetScript("OnEvent", CC.getScreenSize)
+CC.crosshair:SetScript("OnEvent", CC.GetScreenSize)
 
 --- Hook UIParent:SetScale for addons like ElvUI that
 ---   change scale directly without firing UI_SCALE_CHANGED
-hooksecurefunc(UIParent, "SetScale", CC.getScreenSize)
+hooksecurefunc(UIParent, "SetScale", CC.GetScreenSize)
 
 -------------------------------------------------------------------------------
 --- Event Registrations
