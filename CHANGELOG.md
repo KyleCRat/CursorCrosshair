@@ -2,6 +2,15 @@
 
 All notable changes to Crosshair Cursor will be documented in this file.
 
+## [12.0.1-5] - 2026-04-10
+
+### Fixed
+- Global variable leak for `width` and `height` in crosshair update
+- Inconsistent method naming (`getScreenSize` → `GetScreenSize`)
+
+### Changed
+- Remove dead commented-out PixelUtil code
+
 ## [12.0.1-4] - 2026-02-11
 
 ### Fixed
