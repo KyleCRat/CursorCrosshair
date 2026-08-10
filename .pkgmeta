@@ -1,11 +1,10 @@
 package-as: CursorCrosshair
 
 manual-changelog:
-  filename: CHANGELOG.md
-  markup-type: markdown
+    filename: CHANGELOG.md
+    markup-type: markdown
 
 ignore:
-    - images
-    - .pkgmeta
-    - .git
-    - "*.png"
+    - AGENTS.md
+    - FIXME.md
+    - TODO.md
